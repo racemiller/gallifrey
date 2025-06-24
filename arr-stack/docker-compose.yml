@@ -10,7 +10,7 @@
     volumes:
       - ${RECYCLE}:/recycle
       - ${DATA}/Music/Regular Music:/music
-      - ${DOWNLOADS}/completed/music:/data/completed/music
+      - ${DOWNLOADS}/completed/music:/downloads
       - ${DOWNLOADS}/../Soulseek:/soulseek
       - ${APPDATA}/lidarr:/config
       - ${APPDATA}/lidarr/custom-services.d:/custom-services.d
@@ -31,7 +31,7 @@
     volumes:
       - ${RECYCLE}:/recycle
       - ${DATA}/Music/Christmas Music:/music
-      - ${DOWNLOADS}/completed/music:/data/completed/music
+      - ${DOWNLOADS}/completed/music:/downloads
       - ${APPDATA}/xmaslidarr:/config
       - ${APPDATA}/lidarr/custom-services.d:/custom-services.d
       - ${APPDATA}/lidarr/custom-cont-init.d:/custom-cont-init.d
