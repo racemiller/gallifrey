@@ -209,7 +209,7 @@
       - ${APPDATA}/huntarr-sonarr:/config
     environment:
       API_KEY: 999660b68c014e988c13d361348810d8
-      API_URL: http://10.0.0.2:8989
+      API_URL: http://10.0.0.23:8989
       API_TIMEOUT: 60
       MONITORED_ONLY: true
       HUNT_MISSING_SHOWS: 1
@@ -234,7 +234,7 @@
       - arr-stack
     environment:
       API_KEY: 9936906c812c465db0300e7965767ced
-      API_URL: http://10.0.0.2:8686
+      API_URL: http://10.0.0.23:8686
       HUNT_MISSING_MODE: album
       HUNT_MISSING_ITEMS: 1
       HUNT_UPGRADE_ALBUMS: 1
@@ -252,7 +252,7 @@
       - arr-stack
     environment:
       API_KEY: e138a165dd234dcb86d324131b1c0d5e
-      API_URL: http://10.0.0.2:7878
+      API_URL: http://10.0.0.23:7878
       API_TIMEOUT: 60
       MONITORED_ONLY: true
       SKIP_FUTURE_RELEASES: true
@@ -271,7 +271,7 @@
       - arr-stack
     environment:
       API_KEY: 7eb82755fe3f4fa3bce9ed0d2e1b81d9
-      API_URL: http://10.0.0.2:8787
+      API_URL: http://10.0.0.23:8787
       API_TIMEOUT: 60
       MONITORED_ONLY: true
       SKIP_FUTURE_RELEASES: true
