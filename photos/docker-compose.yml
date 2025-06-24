@@ -39,6 +39,7 @@ services:
       - TZ=${TZ}
       - PUID=${PUID}
       - PGID=${PGID}
+      - PS_LOG_LEVEL=info
     labels:
       - com.centurylinklabs.watchtower.enable=true
 
