@@ -145,8 +145,8 @@ services:
     environment:
       - ES_URL=http://archivist-es:9200   # needs protocol e.g. http and port # needs to reference the IP of the archivist-es container
       - REDIS_CON=redis://archivist-redis:6379
-      - HOST_UID=${PUID}
-      - HOST_GID=${PGID}
+      - HOST_UID=0
+      - HOST_GID=0
       - TA_HOST=http://10.0.0.23:8001 http://10.0.0.2/24 https://tube.racemiller.com         # set your host name
       - TA_USERNAME=racemiller           # your initial TA credentials
       - TA_PASSWORD=7508216              # your initial TA credentials

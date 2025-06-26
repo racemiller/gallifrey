@@ -281,7 +281,7 @@ services:
 #      - 21027:21027/udp
 #    restart: unless-stopped
 
-  playlistSync:
+  playlistsync:
     image: rnagabhyrava/plexplaylistsync:latest
     container_name: playlistsync
     # optional only if you chose WRITE_MISSING_AS_CSV=1 in env
