@@ -241,10 +241,9 @@ services:
     
 volumes:
   es:
-  nfs-data:
     driver_opts:
       type: "nfs"
-      o: "addr=10.0.0.2,nolock,soft,nfsvers=4"
+      o: "addr=10.0.0.2,nolock,soft,rw,nfsvers=4"
       device: ":/Data/YouTube"
 
 networks:
