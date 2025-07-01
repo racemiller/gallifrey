@@ -1,4 +1,4 @@
- services:
+services:
   lidarr:
     container_name: lidarr
     image: linuxserver/lidarr:latest
@@ -55,6 +55,7 @@
       - ${DATA}/Other Movies:/other
       - ${DOWNLOADS}/completed/other:/downloads
       - ${APPDATA}/radarr:/config
+      # - radarr-data:/other
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -283,5 +284,12 @@
       STATE_RESET_INTERVAL_HOURS: 168
       DEBUG_MODE: false
 
- networks:
+# volumes:
+#   radarr-data:
+#     driver_opts:
+#       type: "nfs"
+#       o: "addr=10.0.0.2,nolock,soft,rw,nfsvers=4"
+#       device: ":tardis/Data/"
+
+networks:
   arr-stack:
