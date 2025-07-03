@@ -147,8 +147,8 @@ services:
       - TZ=${TZ}
     volumes:
       - ${APPDATA}/nextcloud:/config
-      - ${DATA}/../Nextcloud:/data
-     # - /mnt/Nextcloud:/data
+     # - ${DATA}/../Nextcloud:/data
+      - /mnt/nextcloud:/data
     ports:
       - ${PORT}:443
     restart: unless-stopped

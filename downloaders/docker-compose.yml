@@ -140,7 +140,7 @@ services:
     ports:
       - 8001:8000
     volumes:
-      - nfs-data:/youtube
+      - youtube:/youtube
       - ${APPDATA}/tubearchivist:/cache
     environment:
       - ES_URL=http://archivist-es:9200   # needs protocol e.g. http and port # needs to reference the IP of the archivist-es container
@@ -190,7 +190,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - es:/usr/share/elasticsearch/data    # check for permission error when using bind mount, see readme
+      - ${APPDATA}/tubearchivist/es:/usr/share/elasticsearch/data    # check for permission error when using bind mount, see readme
     expose:
       - "9200"
 
@@ -240,7 +240,7 @@ services:
     restart: unless-stopped
     
 volumes:
-  es:
+  youtube:
     driver_opts:
       type: "nfs"
       o: "addr=10.0.0.2,nolock,soft,rw,nfsvers=4"
