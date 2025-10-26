@@ -1,7 +1,7 @@
- services:
+services:
   lidarr:
     container_name: lidarr
-    image: linuxserver/lidarr:latest
+    image: blampe/lidarr:latest
     networks:
       - arr-stack
     ports:
@@ -10,7 +10,7 @@
     volumes:
       - ${RECYCLE}:/recycle
       - ${DATA}/Music/Regular Music:/music
-      - ${DOWNLOADS}/completed/music:/data/completed/music
+      - ${DOWNLOADS}/completed/music:/downloads
       - ${DOWNLOADS}/../Soulseek:/soulseek
       - ${APPDATA}/lidarr:/config
       - ${APPDATA}/lidarr/custom-services.d:/custom-services.d
@@ -31,7 +31,7 @@
     volumes:
       - ${RECYCLE}:/recycle
       - ${DATA}/Music/Christmas Music:/music
-      - ${DOWNLOADS}/completed/music:/data/completed/music
+      - ${DOWNLOADS}/completed/music:/downloads
       - ${APPDATA}/xmaslidarr:/config
       - ${APPDATA}/lidarr/custom-services.d:/custom-services.d
       - ${APPDATA}/lidarr/custom-cont-init.d:/custom-cont-init.d
@@ -55,6 +55,7 @@
       - ${DATA}/Other Movies:/other
       - ${DOWNLOADS}/completed/other:/downloads
       - ${APPDATA}/radarr:/config
+      # - radarr-data:/other
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -118,24 +119,58 @@
       - PGID=${PGID}
       - TZ=${TZ}
 
-  readarr:
-    image: lscr.io/linuxserver/readarr:develop
-    container_name: readarr
-    networks: 
-      - arr-stack
+  # readarr:
+  #   image: lscr.io/linuxserver/readarr:develop
+  #   container_name: readarr
+  #   networks: 
+  #     - arr-stack
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ${APPDATA}/readarr:/config
+  #     - ${DATA}/eBooks:/books
+  #     - ${DOWNLOADS}/completed/books:/downloads
+  #     - ${RECYCLE}:/recycle
+  #   ports:
+  #     - 8787:8787
+  #   restart: unless-stopped
+
+  lazylibrarian:
+    image: lscr.io/linuxserver/lazylibrarian:latest
+    container_name: lazylibrarian
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - DOCKER_MODS=linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg #optional
     volumes:
-      - ${APPDATA}/readarr:/config
-      - ${DATA}/eBooks:/books
+      - ${APPDATA}/lazy-librarian:/config
       - ${DOWNLOADS}/completed/books:/downloads
-      - ${RECYCLE}:/recycle
+      - ${DATA}/eBooks:/books
+      - ${DATA}/Audiobooks:/audiobooks
     ports:
-      - 8787:8787
+      - 5299:5299
     restart: unless-stopped
-    
+
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - ${APPDATA}/calibre-web:/config
+      - ${DATA}/eBooks:/books
+    ports:
+      - 8083:8083
+    restart: unless-stopped
+
+
   audiobookshelf:
     image: ghcr.io/advplyr/audiobookshelf:latest
     container_name: audiobookshelf
@@ -152,6 +187,7 @@
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:develop
     container_name: prowlarr
+    # network_mode: "service:gluetun"
     networks:
       - arr-stack
     environment:
@@ -168,6 +204,7 @@
     # DockerHub mirror flaresolverr/flaresolverr:latest
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
+    # network_mode: "service:gluetun"
     networks:
       - arr-stack
     environment:
@@ -263,25 +300,52 @@
       STATE_RESET_INTERVAL_HOURS: 168
       DEBUG_MODE: false
 
-  huntarr-readarr:
-    image: huntarr/4readarr:latest
-    container_name: huntarr-readarr
-    restart: unless-stopped
+  # huntarr-readarr:
+  #   image: huntarr/4readarr:latest
+  #   container_name: huntarr-readarr
+  #   restart: unless-stopped
+  #   networks:
+  #     - arr-stack
+  #   environment:
+  #     API_KEY: 7eb82755fe3f4fa3bce9ed0d2e1b81d9
+  #     API_URL: http://10.0.0.23:8787
+  #     API_TIMEOUT: 60
+  #     MONITORED_ONLY: true
+  #     SKIP_FUTURE_RELEASES: true
+  #     HUNT_MISSING_BOOKS: 1
+  #     HUNT_UPGRADE_BOOKS: 0
+  #     SLEEP_DURATION: 900
+  #     RANDOM_SELECTION: true
+  #     REFRESH_AUTHOR: true
+  #     STATE_RESET_INTERVAL_HOURS: 168
+  #     DEBUG_MODE: false
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    hostname: gluetun
     networks:
       - arr-stack
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
     environment:
-      API_KEY: 7eb82755fe3f4fa3bce9ed0d2e1b81d9
-      API_URL: http://10.0.0.23:8787
-      API_TIMEOUT: 60
-      MONITORED_ONLY: true
-      SKIP_FUTURE_RELEASES: true
-      HUNT_MISSING_BOOKS: 1
-      HUNT_UPGRADE_BOOKS: 0
-      SLEEP_DURATION: 900
-      RANDOM_SELECTION: true
-      REFRESH_AUTHOR: true
-      STATE_RESET_INTERVAL_HOURS: 168
-      DEBUG_MODE: false
+      - VPN_SERVICE_PROVIDER=nordvpn
+      - VPN_TYPE=openvpn # or wireguard
+      - OPENVPN_USER=ANjcTRAkd2sx5tRbssYzFcuH
+      - OPENVPN_PASSWORD=QhTZa4VLtswTHNb262GD93ie
+      - SERVER_COUNTRIES=Netherlands
+      - TZ=${TZ}
+    # ports:
+    #   - 9696:9696 # prowlarr
+    #   - 8191:8191 # flaresolverr
 
- networks:
+# volumes:
+#   radarr-data:
+#     driver_opts:
+#       type: "nfs"
+#       o: "addr=10.0.0.2,nolock,soft,rw,nfsvers=4"
+#       device: ":tardis/Data/"
+
+networks:
   arr-stack:

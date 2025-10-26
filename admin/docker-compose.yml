@@ -40,6 +40,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 8020:8080
+    # environment:
+    #   - DOZZLE_REMOTE_AGENT=10.0.0.2:7007
     restart: unless-stopped
 
 #   homeassistant:
@@ -148,7 +150,7 @@ services:
     volumes:
       - ${APPDATA}/nextcloud:/config
      # - ${DATA}/../Nextcloud:/data
-      - /mnt/Nextcloud:/data
+      - /mnt/nextcloud:/data
     ports:
       - ${PORT}:443
     restart: unless-stopped
@@ -309,7 +311,7 @@ services:
 #      - 21027:21027/udp
 #    restart: unless-stopped
 
-  playlistSync:
+  playlistsync:
     image: rnagabhyrava/plexplaylistsync:latest
     container_name: playlistsync
     # optional only if you chose WRITE_MISSING_AS_CSV=1 in env
