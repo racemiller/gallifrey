@@ -8,10 +8,10 @@ services:
       - 8686:8686/tcp
     restart: unless-stopped
     volumes:
-      - ${RECYCLE}:/recycle
-      - ${DATA}/Music/Regular Music:/music
-      - ${DOWNLOADS}/completed/music:/downloads
-      - ${DOWNLOADS}/../Soulseek:/soulseek
+      - ${RECYCLE}:/data/recycle
+      - ${DATA}/Music/Regular Music:/data/music
+      - ${DOWNLOADS}/completed/music:/data/downloads
+      - ${DOWNLOADS}/../soulseek:/data/soulseek
       - ${APPDATA}/lidarr:/config
       - ${APPDATA}/lidarr/custom-services.d:/custom-services.d
       - ${APPDATA}/lidarr/custom-cont-init.d:/custom-cont-init.d
@@ -29,17 +29,54 @@ services:
       - 8585:8686/tcp
     restart: unless-stopped
     volumes:
-      - ${RECYCLE}:/recycle
-      - ${DATA}/Music/Christmas Music:/music
-      - ${DOWNLOADS}/completed/music:/downloads
+      - ${RECYCLE}:/data/recycle
+      - ${DATA}/Music/Christmas Music:/data/music
+      - ${DOWNLOADS}/completed/music:/data/downloads
       - ${APPDATA}/xmaslidarr:/config
       - ${APPDATA}/lidarr/custom-services.d:/custom-services.d
       - ${APPDATA}/lidarr/custom-cont-init.d:/custom-cont-init.d
-      - ${DOWNLOADS}/../Soulseek:/soulseek
+      - ${DOWNLOADS}/../soulseek:/data/soulseek
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+
+  # largelidarr:
+  #   container_name: large-lidarr
+  #   image: blampe/lidarr:latest
+  #   networks:
+  #     - arr-stack
+  #   ports:
+  #     - 8787:8686/tcp
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ${RECYCLE}:/data/recycle
+  #     - ${DATA}/Music/Regular Music:/data/music
+  #     - ${DOWNLOADS}/completed/music:/data/downloads
+  #     - ${DOWNLOADS}/../soulseek:/data/soulseek
+  #     - ${APPDATA}/largelidarr:/config
+  #     # - ${APPDATA}/largelidarr/custom-services.d:/custom-services.d
+  #     # - ${APPDATA}/largelidarr/custom-cont-init.d:/custom-cont-init.d
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  headphones:
+    image: lscr.io/linuxserver/headphones:latest
+    container_name: headphones
+    networks:
+      - arr-stack
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA}/headphones:/config
+      - ${DOWNLOADS}/../soulseek:/downloads
+      - ${DATA}/Music/Regular Music:/music
+    ports:
+      - 8787:8787
+    restart: unless-stopped
 
   radarr:
     container_name: radarr
@@ -50,10 +87,10 @@ services:
       - 7878:7878/tcp
     restart: unless-stopped
     volumes:
-      - ${RECYCLE}:/recycle
-      - ${DATA}/Movies:/movies
-      - ${DATA}/Other Movies:/other
-      - ${DOWNLOADS}/completed/other:/downloads
+      - ${RECYCLE}:/data/recycle
+      - ${DATA}/Movies:/data/movies
+      # - ${DATA}/Movies/Hammar Horror:/data/horror
+      - ${DOWNLOADS}/completed/other:/data/downloads
       - ${APPDATA}/radarr:/config
       # - radarr-data:/other
     environment:
@@ -70,9 +107,9 @@ services:
       - 4444:7878/tcp
     restart: unless-stopped
     volumes:
-      - ${RECYCLE}:/recycle
-      - ${DATA}/4K Movies:/movies
-      - ${DOWNLOADS}/completed/4K:/downloads
+      - ${RECYCLE}:/data/recycle
+      - ${DATA}/Movies/4K Movies:/data/movies
+      - ${DOWNLOADS}/completed/4K:/data/downloads
       - ${APPDATA}/radarr4k:/config
     environment:
       - PUID=${PUID}
@@ -88,10 +125,10 @@ services:
       - 8989:8989/tcp
     restart: unless-stopped
     volumes:
-      - ${RECYCLE}:/recycle
-      - ${DATA}/TV Shows:/tv
-      - ${DATA}/Cartoons:/cartoons
-      - ${DOWNLOADS}/completed/other:/downloads
+      - ${RECYCLE}:/data/recycle
+      - ${DATA}/Shows:/data/shows
+      # - ${DATA}/Cartoons:/cartoons
+      - ${DOWNLOADS}/completed/other:/data/downloads
       - ${APPDATA}/sonarr:/config
       - ${APPDATA}/sonarr/custom-services.d:/custom-services.d
       - ${APPDATA}/sonarr/custom-cont-init.d:/custom-cont-init.d
@@ -109,10 +146,10 @@ services:
       - 8484:8989/tcp
     restart: unless-stopped
     volumes:
-      - ${RECYCLE}:/recycle
-      - ${DATA}/4K Shows:/tv
-      - ${DATA}/4K Cartoons:/cartoons
-      - ${DOWNLOADS}/completed/4K:/downloads
+      - ${RECYCLE}:/data/recycle
+      - ${DATA}/Shows:/data/shows
+      # - ${DATA}/4K Cartoons:/cartoons
+      - ${DOWNLOADS}/completed/4K:/data/downloads
       - ${APPDATA}/sonarr4k:/config
     environment:
       - PUID=${PUID}
@@ -140,6 +177,8 @@ services:
   lazylibrarian:
     image: lscr.io/linuxserver/lazylibrarian:latest
     container_name: lazylibrarian
+    networks:
+      - arr-stack
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -147,9 +186,8 @@ services:
       - DOCKER_MODS=linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg #optional
     volumes:
       - ${APPDATA}/lazy-librarian:/config
-      - ${DOWNLOADS}/completed/books:/downloads
-      - ${DATA}/eBooks:/books
-      - ${DATA}/Audiobooks:/audiobooks
+      - ${DOWNLOADS}/completed/books:/data/downloads
+      - ${DATA}/Books:/data/books
     ports:
       - 5299:5299
     restart: unless-stopped
@@ -157,6 +195,8 @@ services:
   calibre-web:
     image: lscr.io/linuxserver/calibre-web:latest
     container_name: calibre-web
+    networks:
+      - arr-stack
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -165,7 +205,7 @@ services:
       - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
     volumes:
       - ${APPDATA}/calibre-web:/config
-      - ${DATA}/eBooks:/books
+      - ${DATA}/books/eBooks:/data/books
     ports:
       - 8083:8083
     restart: unless-stopped
@@ -179,7 +219,7 @@ services:
     ports:
       - 13378:80
     volumes:
-      - ${DATA}/eBooks:/audiobooks
+      - ${DATA}/Books:/data/books
       - ${APPDATA}/audiobookshelf/config:/config
       - ${APPDATA}/audiobookshelf/metadata:/metadata
     restart: unless-stopped
@@ -214,7 +254,7 @@ services:
       - TZ=${TZ}
     ports:
       - 8191:8191
-    restart: unless-stopped 
+    restart: unless-stopped
 
   bazarr:
     image: linuxserver/bazarr:latest
@@ -226,119 +266,47 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ${DATA}/Cartoons:/cartoons
-      - ${DATA}/Movies:/movies
-      - ${DATA}/TV Shows:/tv
+      - ${DATA}/Shows/Cartoons:/cartoons
+      - ${DATA}/Movies/Regular Movies:/movies
+      - ${DATA}/Shows/TV Shows:/tv
       - ${APPDATA}/bazarr:/config
     ports:
       - 6767:6767
     restart: unless-stopped
 
-  huntarr-sonarr:
-    image: huntarr/4sonarr:latest
-    container_name: huntarr-sonarr
-    restart: unless-stopped
+  huntarr:
+    image: huntarr/huntarr:latest
+    container_name: huntarr
     networks:
       - arr-stack
+    restart: always
     ports:
-      - 8988:8988
+      - "9705:9705"
     volumes:
-      - ${APPDATA}/huntarr-sonarr:/config
+      - ${APPDATA}/huntarr:/config
     environment:
-      API_KEY: 999660b68c014e988c13d361348810d8
-      API_URL: http://10.0.0.23:8989
-      API_TIMEOUT: 60
-      MONITORED_ONLY: true
-      HUNT_MISSING_SHOWS: 1
-      HUNT_UPGRADE_EPISODES: 0
-      SLEEP_DURATION: 900
-      STATE_RESET_INTERVAL_HOURS: 168
-      DEBUG_MODE: false
-      ENABLE_WEB_UI: true
-      SKIP_FUTURE_EPISODES: true
-      SKIP_SERIES_REFRESH: false
-      COMMAND_WAIT_DELAY: 1
-      COMMAND_WAIT_ATTEMPTS: 600
-      MINIMUM_DOWNLOAD_QUEUE_SIZE: -1
-      RANDOM_MISSING: true
-      RANDOM_UPGRADES: true
+      - TZ=${TZ}
 
-  huntarr-lidarr:
-    image: huntarr/4lidarr:2.0
-    container_name: huntarr-lidarr
-    restart: unless-stopped
-    networks:
-      - arr-stack
-    environment:
-      API_KEY: 9936906c812c465db0300e7965767ced
-      API_URL: http://10.0.0.23:8686
-      HUNT_MISSING_MODE: album
-      HUNT_MISSING_ITEMS: 1
-      HUNT_UPGRADE_ALBUMS: 1
-      SLEEP_DURATION: 900
-      RANDOM_SELECTION: true
-      MONITORED_ONLY: true
-      STATE_RESET_INTERVAL_HOURS: 168
-      DEBUG_MODE: false
-
-  huntarr-radarr:
-    image: huntarr/4radarr:latest
-    container_name: huntarr-radarr
-    restart: unless-stopped
-    networks:
-      - arr-stack
-    environment:
-      API_KEY: e138a165dd234dcb86d324131b1c0d5e
-      API_URL: http://10.0.0.23:7878
-      API_TIMEOUT: 60
-      MONITORED_ONLY: true
-      SKIP_FUTURE_RELEASES: true
-      HUNT_MISSING_MOVIES: 1
-      HUNT_UPGRADE_MOVIES: 0
-      SLEEP_DURATION: 900
-      RANDOM_SELECTION: true
-      STATE_RESET_INTERVAL_HOURS: 168
-      DEBUG_MODE: false
-
-  # huntarr-readarr:
-  #   image: huntarr/4readarr:latest
-  #   container_name: huntarr-readarr
-  #   restart: unless-stopped
+  # gluetun:
+  #   image: qmcgaw/gluetun
+  #   container_name: gluetun
+  #   hostname: gluetun
   #   networks:
   #     - arr-stack
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - /dev/net/tun:/dev/net/tun
   #   environment:
-  #     API_KEY: 7eb82755fe3f4fa3bce9ed0d2e1b81d9
-  #     API_URL: http://10.0.0.23:8787
-  #     API_TIMEOUT: 60
-  #     MONITORED_ONLY: true
-  #     SKIP_FUTURE_RELEASES: true
-  #     HUNT_MISSING_BOOKS: 1
-  #     HUNT_UPGRADE_BOOKS: 0
-  #     SLEEP_DURATION: 900
-  #     RANDOM_SELECTION: true
-  #     REFRESH_AUTHOR: true
-  #     STATE_RESET_INTERVAL_HOURS: 168
-  #     DEBUG_MODE: false
-  gluetun:
-    image: qmcgaw/gluetun
-    container_name: gluetun
-    hostname: gluetun
-    networks:
-      - arr-stack
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun:/dev/net/tun
-    environment:
-      - VPN_SERVICE_PROVIDER=nordvpn
-      - VPN_TYPE=openvpn # or wireguard
-      - OPENVPN_USER=ANjcTRAkd2sx5tRbssYzFcuH
-      - OPENVPN_PASSWORD=QhTZa4VLtswTHNb262GD93ie
-      - SERVER_COUNTRIES=Netherlands
-      - TZ=${TZ}
-    # ports:
-    #   - 9696:9696 # prowlarr
-    #   - 8191:8191 # flaresolverr
+  #     - VPN_SERVICE_PROVIDER=nordvpn
+  #     - VPN_TYPE=openvpn # or wireguard
+  #     - OPENVPN_USER=ANjcTRAkd2sx5tRbssYzFcuH
+  #     - OPENVPN_PASSWORD=QhTZa4VLtswTHNb262GD93ie
+  #     - SERVER_COUNTRIES=Netherlands
+  #     - TZ=${TZ}
+  #   # ports:
+  #   #   - 9696:9696 # prowlarr
+  #   #   - 8191:8191 # flaresolverr
 
 # volumes:
 #   radarr-data:
