@@ -1,7 +1,7 @@
 services:
   lidarr:
     container_name: lidarr
-    image: blampe/lidarr:latest
+    image: linuxserver/lidarr:latest
     networks:
       - arr-stack
     ports:
@@ -41,26 +41,27 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
 
-  # largelidarr:
-  #   container_name: large-lidarr
-  #   image: blampe/lidarr:latest
-  #   networks:
-  #     - arr-stack
-  #   ports:
-  #     - 8787:8686/tcp
-  #   restart: unless-stopped
-  #   volumes:
-  #     - ${RECYCLE}:/data/recycle
-  #     - ${DATA}/Music/Regular Music:/data/music
-  #     - ${DOWNLOADS}/completed/music:/data/downloads
-  #     - ${DOWNLOADS}/../soulseek:/data/soulseek
-  #     - ${APPDATA}/largelidarr:/config
-  #     # - ${APPDATA}/largelidarr/custom-services.d:/custom-services.d
-  #     # - ${APPDATA}/largelidarr/custom-cont-init.d:/custom-cont-init.d
-  #   environment:
-  #     - PUID=${PUID}
-  #     - PGID=${PGID}
-  #     - TZ=${TZ}
+  kpoplidarr:
+    container_name: kpop-lidarr
+    image: blampe/lidarr:latest
+    networks:
+      - arr-stack
+    ports:
+      - 7676:8686/tcp
+    restart: unless-stopped
+    volumes:
+      - ${RECYCLE}:/data/recycle
+      - ${DATA}/Music/K-Pop:/data/music
+      - ${DOWNLOADS}/completed/music:/data/downloads
+      - ${DOWNLOADS}/../soulseek:/data/soulseek
+      - ${APPDATA}/kpop-lidarr:/config
+      # - ${APPDATA}/largelidarr/custom-services.d:/custom-services.d
+      # - ${APPDATA}/largelidarr/custom-cont-init.d:/custom-cont-init.d
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+
   headphones:
     image: lscr.io/linuxserver/headphones:latest
     container_name: headphones
@@ -286,6 +287,29 @@ services:
       - ${APPDATA}/huntarr:/config
     environment:
       - TZ=${TZ}
+
+  cleanuparr:
+    image: ghcr.io/cleanuparr/cleanuparr:latest
+    container_name: cleanuparr
+    restart: unless-stopped
+    ports:
+      - "11011:11011"
+    volumes:
+      - ${APPDATA}/cleanuparr:/config
+    environment:
+      - PORT=11011
+      - BASE_PATH=
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=022
+      - TZ=${TZ}
+    # Health check configuration
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11011/health"]
+      interval: 30s        # Check every 30 seconds
+      timeout: 10s         # Allow up to 10 seconds for response
+      start_period: 30s    # Wait 30 seconds before first check
+      retries: 3           # Mark unhealthy after 3 consecutive failures
 
   # gluetun:
   #   image: qmcgaw/gluetun

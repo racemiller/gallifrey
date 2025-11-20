@@ -60,6 +60,16 @@ services:
 #     # - /run/dbus:/run/dbus #optional
 #     restart: unless-stopped
 
+  kiwix-serve:
+    image: ghcr.io/kiwix/kiwix-serve:latest
+    container_name: kiwix
+    volumes:
+      - ${DATA}/Kiwix:/data
+    ports:
+      - 8150:8080
+    command: '*.zim'
+    restart: unless-stopped
+
   navidrome:
     image: deluan/navidrome:latest
     container_name: navidrome
@@ -413,7 +423,7 @@ services:
     restart: unless-stopped
 
   watchtower:
-    image: containrrr/watchtower
+    image: ghcr.io/nicholas-fedor/watchtower:latest
     container_name: watchtower
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
