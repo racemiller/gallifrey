@@ -160,7 +160,7 @@ services:
     volumes:
       - ${APPDATA}/nextcloud:/config
      # - ${DATA}/../Nextcloud:/data
-      - /mnt/nextcloud:/data
+      - /mnt/nextcloud:/data:rshared
     ports:
       - ${PORT}:443
     restart: unless-stopped
