@@ -275,16 +275,42 @@ services:
       - 6767:6767
     restart: unless-stopped
 
-  huntarr:
-    image: huntarr/huntarr:latest
-    container_name: huntarr
-    networks:
-      - arr-stack
+ ### Disabling for now because security/contraversy issues. ###
+  # huntarr:
+  #   image: huntarr/huntarr:latest
+  #   container_name: huntarr
+  #   networks:
+  #     - arr-stack
+  #   restart: always
+  #   ports:
+  #     - "9705:9705"
+  #   volumes:
+  #     - ${APPDATA}/huntarr:/config
+  #   environment:
+  #     - TZ=${TZ}
+
+### Disabling for now because it was causing too many unneccessay updates. ###
+  # scoutarr:
+  #   image: ghcr.io/sufxgit/scoutarr:latest
+  #   container_name: scoutarr
+  #   restart: unless-stopped
+  #   ports:
+  #     - "5839:5839"
+  #   volumes:
+  #     - ${APPDATA}/scoutarr:/app/config
+  #   environment:
+  #     - NODE_ENV=production
+  #     - TZ=${TZ}
+  #     - LOG_LEVEL=info
+
+  newtarr:
+    image: ghcr.io/elfhosted/newtarr:v1.0.0
+    container_name: newtarr
     restart: always
     ports:
       - "9705:9705"
     volumes:
-      - ${APPDATA}/huntarr:/config
+      - ${APPDATA}/newtarr:/config
     environment:
       - TZ=${TZ}
 
