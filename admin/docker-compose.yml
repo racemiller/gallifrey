@@ -164,8 +164,11 @@ services:
     ports:
       - ${PORT}:443
     restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
     depends_on:
       - nextcloud_db
+
   nextcloud_db:
     image: linuxserver/mariadb
     container_name: nextcloud_db
@@ -181,6 +184,8 @@ services:
       - MYSQL_DATABASE=nextcloud_db
       - MYSQL_USER=nextcloud
       - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
     volumes:
       - ${APPDATA}/nextcloud/DB:/config
     restart: unless-stopped
