@@ -255,19 +255,19 @@ services:
 #     - ${APPDATA}/sonarr-youtubedl/logs:/logs
 #   restart: unless-stopped
 
-  soularr:
-    image: mrusse08/soularr:latest
-    container_name: soularr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - SCRIPT_INTERVAL=3600
-    user: ${PUID}:${PGID}
-    volumes:
-      - ${DOWNLOADS}/soulseek:/downloads
-      - ${APPDATA}/soularr:/data
-    restart: unless-stopped
+  # soularr:
+  #   image: mrusse08/soularr:latest
+  #   container_name: soularr
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #     - SCRIPT_INTERVAL=3600
+  #   user: ${PUID}:${PGID}
+  #   volumes:
+  #     - ${DOWNLOADS}/soulseek:/downloads
+  #     - ${APPDATA}/soularr:/data
+  #   restart: unless-stopped
 
   xmas-soularr:
     image: mrusse08/soularr:latest
